@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>章子怡还是童瑶？20 张脸盲测试</title>
+<meta name="description" content="20 张照片，每张只回答一个问题：章子怡还是童瑶。每次进来都是随机抽的 20 张。">
+<style>
+  :root{
+    --bg:#0d0e12;--panel:#171922;--panel-2:#1e212c;--line:#2b2f3d;
+    --txt:#eef1f7;--dim:#9aa3b5;--accent:#5b8cff;--ok:#37c98a;--bad:#ff6b6b;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{margin:0;padding:0;height:100%}
+  body{
+    margin:0;min-height:100%;
+    padding:20px 16px calc(20px + env(safe-area-inset-bottom));
+    background:radial-gradient(1200px 700px at 50% -10%,#1a1e2b 0%,var(--bg) 60%) no-repeat,var(--bg);
+    color:var(--txt);
+    font:16px/1.55 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+    display:flex;flex-direction:column;
+  }
+  #app{width:100%;max-width:520px;margin:auto}
+  .screen{display:none;animation:fade .28s ease}
+  .screen.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  h1{font-size:26px;line-height:1.3;margin:0 0 10px;letter-spacing:.5px}
+  p{margin:0 0 12px}
+  .dim{color:var(--dim)}
+  .small{font-size:13.5px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px}
+  .center{text-align:center}
+  .rules{margin:16px 0 20px;padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-radius:14px}
+  .rules ul{margin:0;padding-left:18px;color:var(--dim);font-size:14.5px}
+  .rules li{margin:5px 0}
+  button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+  .btn{display:block;width:100%;padding:15px 18px;border-radius:14px;background:var(--accent);color:#fff;font-size:17px;font-weight:600;transition:transform .12s ease,filter .12s ease}
+  .btn:active{transform:scale(.985);filter:brightness(1.06)}
+  .btn.ghost{background:var(--panel-2);border:1px solid var(--line);color:var(--txt);font-weight:500}
+  .topbar{display:flex;flex-direction:column;gap:8px;margin-bottom:11px}
+  .counter{font-size:14px;color:var(--dim);font-variant-numeric:tabular-nums}
+  .dots{display:flex;gap:4px}
+  .dot{flex:1 1 0;height:6px;border-radius:3px;background:#333849;transition:background .2s}
+  .dot.done{background:var(--accent)}
+  .dot.now{background:#fff}
+  .frame{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:10px;margin-bottom:14px}
+  .frame img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;max-height:min(56vh,520px);border-radius:11px;background:#0a0b0f}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .choice{padding:17px 10px;border-radius:14px;background:var(--panel-2);border:1px solid var(--line);font-size:19px;font-weight:600;letter-spacing:1px;transition:transform .12s ease,background .15s ease,border-color .15s ease}
+  .choice:hover{background:#252a37;border-color:#3a4152}
+  .choice.picked{border-color:var(--accent);background:rgba(91,140,255,.16)}
+  .choice:active{transform:scale(.98)}
+  .choice[disabled]{opacity:.5}
+  .keyhint{text-align:center;font-size:12.5px;color:#6d768a;margin-top:12px}
+  .navrow{display:flex;align-items:center;gap:12px;margin-top:14px}
+  .backbtn{padding:10px 16px;border-radius:11px;background:var(--panel-2);border:1px solid var(--line);color:var(--txt);font-size:14.5px;font-weight:500;white-space:nowrap;transition:background .15s ease,opacity .15s ease}
+  .backbtn:hover:not([disabled]){background:#252a37}
+  .backbtn[disabled]{opacity:.35;cursor:default}
+  .navrow .keyhint{margin-top:0;flex:1;text-align:right}
+  .score{font-size:52px;font-weight:800;letter-spacing:-1px;line-height:1.05;margin:2px 0 6px;font-variant-numeric:tabular-nums}
+  .score small{font-size:20px;color:var(--dim);font-weight:600}
+  .verdict{font-size:17px;margin:0 0 4px}
+  .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px;margin:14px 0 4px}
+  .cell{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:7px;text-align:center;cursor:zoom-in}
+  .cell img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:8px;margin-bottom:7px}
+  .cell .ans{font-size:13px;font-weight:600;line-height:1.35}
+  .cell .mine{font-size:11.5px;color:var(--dim);line-height:1.3}
+  .cell.right{border-color:rgba(55,201,138,.55)}
+  .cell.wrong{border-color:rgba(255,107,107,.55)}
+  .tag{display:inline-block;padding:1px 6px;border-radius:6px;font-size:11px;font-weight:700;vertical-align:1px}
+  .tag.ok{background:rgba(55,201,138,.16);color:var(--ok)}
+  .tag.bad{background:rgba(255,107,107,.16);color:var(--bad)}
+  .score-card{padding-bottom:16px}
+  .rate{margin:10px 0 0;font-size:14.5px;color:var(--txt);font-variant-numeric:tabular-nums}
+  .rate b{color:#fff;font-size:17px}
+  .sticky-score{position:sticky;top:0;z-index:20;margin:18px 0 10px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px 14px;border-radius:12px;background:rgba(23,25,34,.95);border:1px solid var(--line);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font-size:14px;color:var(--dim);font-variant-numeric:tabular-nums}
+  .sticky-score b{color:var(--txt);font-size:15.5px}
+  .sharebox{margin-top:18px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .sharebox textarea{width:100%;min-height:66px;resize:vertical;background:#0f1117;color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:10px;font:14px/1.5 inherit}
+  .sharebox .row{display:flex;gap:10px;margin-top:10px}
+  .lightbox{position:fixed;inset:0;background:rgba(5,6,9,.94);display:none;align-items:center;justify-content:center;padding:24px;z-index:50}
+  .lightbox.on{display:flex}
+  .lightbox img{max-width:100%;max-height:80vh;border-radius:12px}
+  .lightbox .cap{margin-top:14px;font-size:15px;text-align:center}
+  .lightbox .wrap{display:flex;flex-direction:column;align-items:center}
+  footer{margin-top:18px;text-align:center;font-size:12px;color:#5d6478;line-height:1.7}
+</style>
+</head>
+<body>
+<main id="app">
+
+  <!-- ============ 开始 ============ -->
+  <section id="screen-start" class="screen active">
+    <div class="card">
+      <h1>章子怡 or 童瑶？</h1>
+      <p class="dim small">20 张照片，每张只回答一个问题：照片里的人，是<b>章子怡</b>还是<b>童瑶</b>？</p>
+      <div class="rules">
+        <ul>
+          <li>每次进来随机抽 20 张，各 10 张，顺序也是随机的</li>
+          <li>一张一题，作答后自动进入下一张，选错了可以点「← 上一张」回去改</li>
+          <li>过程中不给对错提示，20 张答完统一揭晓</li>
+        </ul>
+      </div>
+      <button class="btn" id="startBtn">开始（随机 20 张）</button>
+      <p class="dim small" style="margin:12px 0 0;text-align:center">做过 5 轮不同的题，你大概就知道自己能不能分清了</p>
+    </div>
+  </section>
+
+  <!-- ============ 答题 ============ -->
+  <section id="screen-quiz" class="screen">
+    <div class="topbar">
+      <div class="counter">第 <span id="pos">1</span> / <span id="total">20</span> 张</div>
+      <div class="dots" id="dots"></div>
+    </div>
+    <div class="frame"><img id="photo" alt="照片" decoding="async"></div>
+    <div class="choices">
+      <button class="choice" data-pick="Z">章子怡</button>
+      <button class="choice" data-pick="T">童瑶</button>
+    </div>
+    <div class="navrow">
+      <button class="backbtn" id="backBtn" disabled>← 上一张</button>
+      <span class="keyhint">键盘 1 / 2 作答　·　← 返回上一张</span>
+    </div>
+  </section>
+
+  <!-- ============ 结果 ============ -->
+  <section id="screen-result" class="screen">
+    <div class="card center score-card">
+      <div class="score"><span id="scoreNum">0</span><small> / <span id="total2">20</span></small></div>
+      <p class="verdict" id="verdict"></p>
+      <p class="dim small" id="verdictSub"></p>
+      <p class="rate" id="rateLine"></p>
+    </div>
+    <div class="sticky-score">
+      <span>逐张答案　答对 <b id="miniRight">0</b> / <span id="total3">20</span>　·　正确率 <b id="miniPct">0%</b></span>
+      <span class="dim small">点图可放大</span>
+    </div>
+    <div class="list" id="list"></div>
+    <div class="sharebox">
+      <div class="dim small" style="margin-bottom:8px">想发小红书/朋友圈，可以直接复制这段：</div>
+      <textarea id="shareText" readonly></textarea>
+      <div class="row">
+        <button class="btn ghost" id="copyBtn">复制文案</button>
+        <button class="btn ghost" id="againBtn">再来一组随机题</button>
+      </div>
+    </div>
+    <footer>
+      图片来自公开网络，仅供娱乐，不用作任何商业用途；如涉及版权请告知，会立即删除。<br>
+      每次都是随机抽题，所以没有固定答案可以背。
+    </footer>
+  </section>
+
+</main>
+
+<div class="lightbox" id="lightbox">
+  <div class="wrap">
+    <img id="lbImg" alt="照片">
+    <div class="cap" id="lbCap"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var NAMES = { Z: "章子怡", T: "童瑶" };
+  var TOTAL = 20, HALF = 10;
+
+  // 图池身份（30 张章子怡 + 30 张童瑶），编码存放，文件名是中性编号
+  var POOL_B64 = "MDAwMTAwMTExMDAxMDAwMDExMTAwMDExMTExMTAwMDAwMTAwMTExMDAwMDAxMTAxMTEwMTEwMTEwMTEx";
+  var POOL = atob(POOL_B64).split("").map(function (c) {
+    return c === "1" ? "Z" : "T";
+  });
+  var POOL_SRC = POOL.map(function (_, i) {
+    var n = i + 1;
+    return "images/q" + (n < 10 ? "00" : (n < 100 ? "0" : "")) + n + ".jpg";
+  });
+
+  var el = function (id) { return document.getElementById(id); };
+  var idx = 0, picks = [], keys = [], srcs = [], locked = false;
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  /* 随机抽 10 章 + 10 童，整体打乱顺序 */
+  function draw() {
+    var z = [], t = [];
+    POOL.forEach(function (p, i) { (p === "Z" ? z : t).push(i); });
+    shuffle(z); shuffle(t);
+    var picked = shuffle(z.slice(0, HALF).concat(t.slice(0, HALF)));
+    keys = picked.map(function (i) { return POOL[i]; });
+    srcs = picked.map(function (i) { return POOL_SRC[i]; });
+  }
+
+  function preload() {
+    srcs.forEach(function (s) { var im = new Image(); im.src = s; });
+  }
+
+  function show(id) {
+    ["screen-start", "screen-quiz", "screen-result"].forEach(function (s) {
+      el(s).classList.toggle("active", s === id);
+    });
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    window.scrollTo(0, 0);
+    requestAnimationFrame(function () { window.scrollTo(0, 0); });
+  }
+
+  function buildDots() {
+    var box = el("dots");
+    box.innerHTML = "";
+    for (var i = 0; i < TOTAL; i++) {
+      var d = document.createElement("div");
+      d.className = "dot";
+      box.appendChild(d);
+    }
+  }
+  function paintDots() {
+    var dots = el("dots").children;
+    for (var i = 0; i < dots.length; i++) {
+      dots[i].className = "dot" +
+        (i === idx ? " now" : (picks[i] != null ? " done" : ""));
+    }
+  }
+
+  function renderRound() {
+    el("pos").textContent = String(idx + 1);
+    var img = el("photo");
+    img.alt = "第 " + (idx + 1) + " 张照片";
+    img.src = srcs[idx];
+    paintDots();
+    locked = false;
+    var cur = picks[idx];
+    document.querySelectorAll(".choice").forEach(function (b) {
+      b.disabled = false;
+      b.classList.toggle("picked", cur != null && b.getAttribute("data-pick") === cur);
+    });
+    el("backBtn").disabled = (idx === 0);
+  }
+
+  function answer(pick) {
+    if (locked) return;
+    locked = true;
+    document.querySelectorAll(".choice").forEach(function (b) { b.disabled = true; });
+    picks[idx] = pick;
+    var last = (idx === TOTAL - 1);
+    var img = el("photo");
+    img.style.transition = "opacity .16s ease";
+    img.style.opacity = "0.15";
+    setTimeout(function () {
+      img.style.opacity = "1";
+      if (last) { finish(); } else { idx++; renderRound(); }
+    }, 170);
+  }
+
+  function goBack() {
+    if (locked || idx === 0) return;
+    idx--;
+    renderRound();
+  }
+
+  function finish() {
+    var right = 0, lines = [];
+    var list = el("list");
+    list.innerHTML = "";
+    picks.forEach(function (pick, i) {
+      var truth = keys[i], ok = pick === truth;
+      var short = srcs[i].split("/").pop();
+      lines.push((ok ? "✓" : "✗") + " 第" + (i + 1) + "张 " + NAMES[truth] +
+                 "（我选" + (NAMES[pick] || "—") + "）" + short);
+      if (ok) right++;
+      var cell = document.createElement("div");
+      cell.className = "cell " + (ok ? "right" : "wrong");
+      var im = document.createElement("img");
+      im.src = srcs[i];
+      im.alt = "第 " + (i + 1) + " 张";
+      var ans = document.createElement("div");
+      ans.className = "ans";
+      ans.textContent = NAMES[truth] + " ";
+      var tag = document.createElement("span");
+      tag.className = "tag " + (ok ? "ok" : "bad");
+      tag.textContent = ok ? "✓" : "✗";
+      ans.appendChild(tag);
+      var mine = document.createElement("div");
+      mine.className = "mine";
+      mine.textContent = "你选了 " + (NAMES[pick] || "—");
+      cell.appendChild(im); cell.appendChild(ans); cell.appendChild(mine);
+      cell.addEventListener("click", function () { openBox(i, truth, pick); });
+      list.appendChild(cell);
+    });
+
+    var pct = Math.round((right / TOTAL) * 100);
+    el("scoreNum").textContent = String(right);
+    el("rateLine").innerHTML = "正确率 <b>" + pct + "%</b>　·　答对 " + right +
+      " 张，答错 " + (TOTAL - right) + " 张";
+    el("miniRight").textContent = String(right);
+    el("miniPct").textContent = pct + "%";
+    el("shareText").value = "章子怡还是童瑶，我答对了 " + right + "/" + TOTAL +
+      "（正确率 " + pct + "%）。据说这两张脸很难分清，你来试试能对几张？";
+
+    var v = el("verdict"), sub = el("verdictSub");
+    if (right === TOTAL) {
+      v.textContent = TOTAL + " / " + TOTAL + "，全对——你是真的分得清。";
+      sub.textContent = "这两张脸在大多数人眼里几乎一模一样，你居然一张没错。";
+    } else if (right >= 17) {
+      v.textContent = "对 " + right + " 张，眼力不错。";
+      sub.textContent = "离满分就差一点点了。";
+    } else if (right >= 13) {
+      v.textContent = "对 " + right + " 张，比瞎猜强一点。";
+      sub.textContent = "看来这俩人确实容易混。";
+    } else if (right >= 9) {
+      v.textContent = "对 " + right + " 张，基本就是猜的。";
+      sub.textContent = "照片是特意挑的，认错很正常。";
+    } else if (right >= 5) {
+      v.textContent = "只对 " + right + " 张……被绕得挺惨。";
+      sub.textContent = "要不换一组随机题再试一次？";
+    } else {
+      v.textContent = "只对 " + right + " 张，反向也快满分了。";
+      sub.textContent = "别灰心，这二十张本来就是最像的角度。";
+    }
+    show("screen-result");
+  }
+
+  function openBox(i, truth, pick) {
+    el("lbImg").src = srcs[i];
+    el("lbCap").innerHTML = "第 " + (i + 1) + " 张：<b>" + NAMES[truth] +
+      "</b>　（你选了 " + (NAMES[pick] || "—") + "）";
+    el("lightbox").classList.add("on");
+  }
+
+  function start() {
+    draw();
+    idx = 0;
+    picks = new Array(TOTAL);
+    locked = false;
+    preload();
+    buildDots();
+    renderRound();
+    show("screen-quiz");
+  }
+
+  el("startBtn").addEventListener("click", start);
+  el("againBtn").addEventListener("click", start);
+  el("backBtn").addEventListener("click", goBack);
+  document.querySelectorAll(".choice").forEach(function (b) {
+    b.addEventListener("click", function () { answer(b.getAttribute("data-pick")); });
+  });
+  el("copyBtn").addEventListener("click", function () {
+    var ta = el("shareText");
+    ta.select();
+    var done = function () {
+      var b = el("copyBtn");
+      b.textContent = "已复制 ✓";
+      setTimeout(function () { b.textContent = "复制文案"; }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(ta.value).then(done, function () {
+        try { document.execCommand("copy"); done(); } catch (e) { done(); }
+      });
+    } else {
+      try { document.execCommand("copy"); done(); } catch (e) { done(); }
+    }
+  });
+  el("lightbox").addEventListener("click", function () {
+    el("lightbox").classList.remove("on");
+  });
+  document.addEventListener("keydown", function (e) {
+    if (el("lightbox").classList.contains("on") && (e.key === "Escape" || e.key === " ")) {
+      el("lightbox").classList.remove("on");
+      return;
+    }
+    if (el("screen-quiz").classList.contains("active")) {
+      if (e.key === "1") answer("Z");
+      if (e.key === "2") answer("T");
+      if (e.key === "ArrowLeft" || e.key === "Backspace") { e.preventDefault(); goBack(); }
+    } else if (el("screen-start").classList.contains("active")) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); start(); }
+    } else if (el("screen-result").classList.contains("active")) {
+      if (e.key === "Enter") start();
+    }
+  });
+
+  ["total", "total2", "total3"].forEach(function (id) { el(id).textContent = String(TOTAL); });
+})();
+</script>
+</body>
+</html>
